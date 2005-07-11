@@ -138,8 +138,6 @@ read_print_text(FILE* file, u_int32_t strLen)
 
 
 
-#pragma mark -
-
 // 'fmt ' 
 void
 proccessFmtChunk( FILE *file, u_int32_t chunkSize )
@@ -381,8 +379,6 @@ proccessLISTChunk( FILE *file, u_int32_t chunkSize )
 
 }
 
-
-#pragma mark -
 
 
 
