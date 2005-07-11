@@ -1,6 +1,10 @@
 WAVE Meta Tools
 ===============
 
+A collection of roughly coded tools to manipulate WAVE files, 
+with an emphasis on the metadata used by the radio industry.
+
+
 
 wavemetainfo
 ------------
