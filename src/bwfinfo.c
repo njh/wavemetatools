@@ -296,11 +296,11 @@ proccessLISTChunk( FILE *file, u_int32_t chunkSize )
 		}
 
 		// Extract the INFO sub item
-		if (memcmp("ISRF", &infoType, sizeof(infoType))==0) {
-			printf("info-intro-time: ");
-		} else if (memcmp("IMED", &infoType, sizeof(infoType))==0) {
-			printf("info-segue-time: ");
-		} else if (memcmp("HKST", &infoType, sizeof(infoType))==0) {
+//		if (memcmp("ISRF", &infoType, sizeof(infoType))==0) {
+//			printf("info-intro-time: ");
+//		} else if (memcmp("IMED", &infoType, sizeof(infoType))==0) {
+//			printf("info-segue-time: ");
+		if (memcmp("HKST", &infoType, sizeof(infoType))==0) {
 			printf("info-hook-start: ");
 		} else if (memcmp("HKEN", &infoType, sizeof(infoType))==0) {
 			printf("info-hook-end: ");
@@ -399,7 +399,10 @@ proccessSubChunk(FILE* file, int seek)
 	// DEBUGGING
 	if (debug) fprintf(stderr, "  Sub-Chunk at: %8.8x\n", seek);
 	
-	// BIG BAD HACK !
+	// # For some unknown reason the data in the
+	// # WAVE data chunk is sometimes a byte or two too long
+	// # fortunately they are always NULL bytes, so we can
+	// # just ignore them
 	do {
 		// Seek to the start of the sub chunk
 		if (fseek(file, seek, SEEK_SET)!=0)
@@ -409,10 +412,9 @@ proccessSubChunk(FILE* file, int seek)
 		if (fread(&type, sizeof(type), 1, file)!=1)
 			handle_error("Error: unable to read sub chunk type\n");
 		
-		// The HACK ! - skip a byte if the sub-chunk type starts with a null byte
+		// skip a byte if the sub-chunk type starts with a null byte
 		if (type[0] == 0) {
-			// * This happens too often :( *
-			fprintf(stderr, "Warning: Sub Chunk type started with a null char\n");
+			if (debug) fprintf(stderr, "Warning: Sub Chunk type started with a null char\n");
 			++seek;
 		}
 	} while (type[0] == 0);
@@ -447,7 +449,7 @@ proccessSubChunk(FILE* file, int seek)
 	} else if (memcmp("JUNK", &type, sizeof(type))==0) {
 		// Ignore
 	} else {
-		fprintf(stderr, "Warning: Unknown sub-chunk type '%4.4s'.\n", (char*)&type);
+		fprintf(stderr, "Warning: Unhandled sub-chunk type '%4.4s'.\n", (char*)&type);
 	}
 
 	// DEBUGGING
