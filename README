@@ -1,11 +1,18 @@
-bwftools
-========
+WAVE Meta Tools
+===============
 
 
-* May only work on little endian processors *
+wavemetainfo
+------------
+display the chunks contained in a WAVE file (rfc822 style)
 
 
-bwfunwrap - unwrap a WAVE containing MPEG audio
-bwfwrap - wrap up some MPEG Audio inside a WAVE file
-bwfinfo - display the chunks contained in a WAVE file (rfc822 style)
+waveunwrap
+----------
+unwrap a WAVE containing MPEG audio
+
+
+wavewrap
+--------
+wrap up some MPEG Audio inside a WAVE file
 

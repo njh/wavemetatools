@@ -1,26 +1,17 @@
 
-AC_INIT(src/bwfinfo.c)
+AC_INIT(src/wavemetainfo.c)
 AM_CONFIG_HEADER(src/config.h)
-AM_INIT_AUTOMAKE(bwftools, 0.1)
+AM_INIT_AUTOMAKE(wavemetatools, 0.1)
 
 
 dnl ############## C Compiler Checks
 AC_PROG_CC
-AC_PROG_CXX
 AC_C_BIGENDIAN
 AC_C_CONST
 
 
 dnl ############## Standard Header Files
 AC_HEADER_STDC
-
-
-dnl ############## Check for libid3
-AC_SEARCH_LIBS(ID3Tag_Link,
-	"id3" "id3 -lstdc++" "id3 -lz" "id3 -lz -lstdc++",
-	,
-	AC_MSG_ERROR(id3lib not found)
-)
 
 
 dnl ############## Type checks

@@ -1,5 +1,3 @@
-bin_PROGRAMS = bwfinfo
+bin_PROGRAMS = wavemetainfo
 
-bwfinfo_SOURCES = bwfinfo.c
-bwfinfo_CFLAGS = -g -Wall
-#bwfinfo_LDFLAGS = 
+wavemetainfo_SOURCES = wavemetainfo.c

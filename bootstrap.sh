@@ -16,5 +16,5 @@ run_cmd automake --add-missing --copy
 run_cmd autoconf
 
 echo
-echo "Now type './configure' to configure BWF Tools"
+echo "Now type './configure' to configure WAVE Meta Tools"
 echo
