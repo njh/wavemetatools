@@ -29,6 +29,7 @@
 #include <stdlib.h>
 
 #include "config.h"
+#include "util.h"
 
 // Windows clipboard types
 #define CF_TEXT             1
@@ -56,77 +57,42 @@
 #define CF_DSPENHMETAFILE   0x008E
 
 
+// CartChunk data structures
+typedef struct
+{
+	char dwUsage[4];			// FOURCC timer usage ID
+	u_int16_t dwValue;			// timer value in samples from head
+} cart_timer_t;
+
+typedef struct {
+ 	char Version[4];			// Version of the data structure
+    char Title[64];				// ASCII title of cart audio sequence
+    char Artist[64];			// ASCII artist or creator name
+    char CutID[64];				// ASCII cut number identification
+    char ClientID[64];			// ASCII client identification
+    char Category[64];			// ASCII Category ID, SA, NEWS, etc
+    char Classification[64];	// ASCII Classifcataion of auxiliary key
+    char OutCue[64];			// ASCII out cue text
+    char StartDate[10];			// ASCII YYYY-MM-DD
+    char StartTime[8];			// ASCII hh:mm:ss
+    char EndDate[10];			// ASCII YYYY-MM-DD
+    char EndTime[8];			// ASCII hh:mm:ss
+    char ProducerAppID[64];		// Name of vendor or application
+    char ProducerAppVersion[64];// Version of producer application
+    char UserDef[64];			// User defined text
+    u_int16_t LevelReference;	// Sample value for 0 dB reference
+    cart_timer_t PostTimer[8];	// 8 time markers after head
+    char Reserved[276];			// Reserved for future expansion
+    char URL[1024];				// Uniform resource locator
+    // char TagText[];			// Free form text for scripts or tags
+} cart_extension_t;
+
 
 // Globals
 int debug = 0;
 u_int32_t byteRate = 0;
 u_int32_t audioDataLen = 0;
 
-
-
-
-
-
-// Helper routines
-u_int32_t my_swap32(u_int32_t x) {
-    return((x<<24)|((x<<8)&0x00FF0000)|((x>>8)&0x0000FF00)|(x>>24));
-}
-
-u_int16_t my_swap16(u_int16_t x) {
-    return((x<<8)|(x>>8));
-}
-
-u_int32_t
-read_uint32( FILE* file, const char * err_str )
-{
-    u_int32_t x = 0;
-    
-    int res = fread( &x, 4, 1, file );
-    if (res!=1) {
-        fprintf(stderr, "Failed to read '%s'.\n", err_str);
-        exit(3);
-    }
-    
-#ifdef WORDS_BIGENDIAN
-    return my_swap32( x );
-#else
-    return x;
-#endif
-}
-
-
-u_int16_t
-read_uint16( FILE* file, const char * err_str )
-{
-    u_int16_t x = 0;
-    
-    int res = fread( &x, 2, 1, file );
-    if (res!=1) {
-        fprintf(stderr, "Failed to read '%s'.\n", err_str);
-        exit(3);
-    }
-
-#ifdef WORDS_BIGENDIAN
-    return my_swap16( x );
-#else
-    return x;
-#endif
-}
-
-
-u_int8_t
-read_uint8( FILE* file, const char * err_str )
-{
-    u_int8_t x = 0;
-    
-    int res = fread( &x, 1, 1, file );
-    if (res!=1) {
-        fprintf(stderr, "Failed to read '%s'.\n", err_str);
-        exit(3);
-    }
-
-    return x;
-}
 
 
 void
@@ -273,58 +239,42 @@ proccessDISPChunk( FILE *file, u_int32_t chunkSize )
     }
 }
 
+
 // 'cart' - CartChunk/aes46-2002
 void
 proccessCartChunk( FILE *file, u_int32_t chunkSize )
 {
+    cart_extension_t cart;
     
-    // CHAR Version[4];				// Version of the data structure
-    // CHAR Title[64];				// ASCII title of cart audio sequence
-    // CHAR Artist[64];				// ASCII artist or creator name
-    // CHAR CutID[64];				// ASCII cut number identification
-    // CHAR ClientID[64];			// ASCII client identification
-    // CHAR Category[64];			// ASCII Category ID, SA, NEWS, etc
-    // CHAR Classification[64];		// ASCII Classifcataion of auxiliary key
-    // CHAR OutCue[64];				// ASCII out cue text
-    // CHAR StartDate[10];			// ASCII YYYY-MM-DD
-    // CHAR StartTime[8];			// ASCII hh:mm:ss
-    // CHAR EndDate[10];			// ASCII YYYY-MM-DD
-    // CHAR EndTime[8];				// ASCII hh:mm:ss
-    // CHAR ProducerAppID[64];		// Name of vendor or application
-    // CHAR ProducerAppVersion[64];	// Version of producer application
-    // CHAR UserDef[64];			// User defined text
-    // DWORD dwLevelReference		// Sample value for 0 dB reference
-    // CART_TIMER PostTimer[8]		// 8 time markers after head
-    // CHAR Reserved[276];			// Reserved for future expansion
-    // CHAR URL[1024];				// Uniform resource locator
-    // CHAR TagText[];				// Free form text for scripts or tags
+    // Zero the memory
+    memset( &cart, 0, sizeof(cart) );
     
-    // typedef struct cart_timer_tag
-    // {
-    //		FOURCC dwUsage;			// FOURCC timer usage ID
-    //		DWORD dwValue;			// timer value in samples from head
-    // } CART_TIMER;
-    
-    fprintf(stderr, "Warning: CartChunk is not supported yet.\n");
-    
-    // cart-version
-    // cart-title
-    // cart-artist
-    // cart-cutid
-    // cart-clientid
-    // cart-category
-    // cart-classification
-    // cart-outcue
-    // cart-startdate
-    // cart-starttime
-    // cart-enddate
-    // cart-endtime
-    // cart-producerappid
-    // cart-producerappversion
-    // cart-userdef
-    // cart-levelreference
-    // cart-url
-    // cart-tagtext
+    // Read in the chunk
+   	if (fread(&cart, sizeof(cart), 1, file)!=1)
+      handle_error("Error: unable to read whole CartChunk\n");
+   		
+	printf("cart-version: %s\n", cart.Version);
+	printf("cart-title: %s\n", cart.Title);
+	printf("cart-artist: %s\n", cart.Artist);
+	printf("cart-cutid: %s\n", cart.CutID);
+	printf("cart-clientid: %s\n", cart.ClientID);
+	printf("cart-category: %s\n", cart.Category);
+	printf("cart-classification: %s\n", cart.Classification);
+	printf("cart-outcue: %s\n", cart.OutCue);
+	printf("cart-startdate: %s\n", cart.StartDate);
+	printf("cart-starttime: %s\n", cart.StartTime);
+	printf("cart-enddate: %s\n", cart.EndDate);
+	printf("cart-endtime: %s\n", cart.EndTime);
+	printf("cart-producerappid: %s\n", cart.ProducerAppID);
+	printf("cart-producerappversion: %s\n", cart.ProducerAppVersion);
+	printf("cart-userdef: %s\n", cart.UserDef);
+	printf("cart-levelreference: %d\n", my_swap32(cart.LevelReference));
+	
+	// ** Post Timer **
+	
+	printf("cart-url: %s\n", cart.URL);
+
+	// ** Tag Text **
 }
 
 
@@ -512,7 +462,7 @@ proccessChunk(FILE* file, int seek)
     
     // Read in the format of the chunk
     if (fread(&format, sizeof(format), 1, file)!=1)
-        handle_error("Error: unable to chunk format\n");
+        handle_error("Error: unable to read chunk format\n");
 
 
     // DEBUGGING
@@ -520,7 +470,7 @@ proccessChunk(FILE* file, int seek)
     
     // Make sure it is WAVE
     if (memcmp("WAVE", &format, sizeof(format))!=0) {
-        fprintf(stderr, "Error: unsupport chunk format: %4.4s\n", format);
+        fprintf(stderr, "Error: unsupported chunk format: %4.4s\n", format);
         exit(2);
     }
 
@@ -540,8 +490,7 @@ proccessChunk(FILE* file, int seek)
 /* Display how to use this program */
 static int usage( const char * progname )
 {
-    fprintf(stderr, "Wave Meta Info version %s\n", VERSION);
-    fprintf(stderr, "Displays information about a WAVE file in RFC822 style format.\n\n");
+    fprintf(stderr, "Wave Meta Tools version %s\n", VERSION);
     fprintf(stderr, "Usage: %s [-d] <filename.wav>\n\n", progname);
     exit(1);
 }

@@ -28,4 +28,16 @@
 #include <stdlib.h>
 
 #include "config.h"
+#include "util.h"
 
+
+
+int
+main(int argc, char **argv)
+{
+
+	printf("Echooooooo !\n");
+    
+    // Success !
+    return 0;
+}

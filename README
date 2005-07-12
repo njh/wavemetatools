@@ -13,15 +13,24 @@ display the chunks contained in a WAVE file (rfc822 style)
 
 waveunwrap
 ----------
-unwrap a WAVE containing MPEG audio
+unwrap a WAVE file. Takes the 'data' chunk from a WAVE file and copys 
+it to an output file. Works well for extacting MPEG Audio, but may be 
+useful for other WAVE file formats too.
 
 
 wavewrap
 --------
-wrap up some MPEG Audio inside a WAVE file
+wrap up some MPEG Audio inside a WAVE file.
 
 
 bsiwave_to_mpeg
 ---------------
 Perl script to convert a BSI style WAVE file and its metadata 
 to an MPEG Audio file.
+
+
+cartchunk_to_mpeg
+-----------------
+Perl script to convert a CartChunk WAVE file and its metadata 
+to an MPEG Audio file.
+
