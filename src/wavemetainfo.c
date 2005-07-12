@@ -273,6 +273,60 @@ proccessDISPChunk( FILE *file, u_int32_t chunkSize )
     }
 }
 
+// 'cart' - CartChunk/aes46-2002
+void
+proccessCartChunk( FILE *file, u_int32_t chunkSize )
+{
+    
+    // CHAR Version[4];				// Version of the data structure
+    // CHAR Title[64];				// ASCII title of cart audio sequence
+    // CHAR Artist[64];				// ASCII artist or creator name
+    // CHAR CutID[64];				// ASCII cut number identification
+    // CHAR ClientID[64];			// ASCII client identification
+    // CHAR Category[64];			// ASCII Category ID, SA, NEWS, etc
+    // CHAR Classification[64];		// ASCII Classifcataion of auxiliary key
+    // CHAR OutCue[64];				// ASCII out cue text
+    // CHAR StartDate[10];			// ASCII YYYY-MM-DD
+    // CHAR StartTime[8];			// ASCII hh:mm:ss
+    // CHAR EndDate[10];			// ASCII YYYY-MM-DD
+    // CHAR EndTime[8];				// ASCII hh:mm:ss
+    // CHAR ProducerAppID[64];		// Name of vendor or application
+    // CHAR ProducerAppVersion[64];	// Version of producer application
+    // CHAR UserDef[64];			// User defined text
+    // DWORD dwLevelReference		// Sample value for 0 dB reference
+    // CART_TIMER PostTimer[8]		// 8 time markers after head
+    // CHAR Reserved[276];			// Reserved for future expansion
+    // CHAR URL[1024];				// Uniform resource locator
+    // CHAR TagText[];				// Free form text for scripts or tags
+    
+    // typedef struct cart_timer_tag
+    // {
+    //		FOURCC dwUsage;			// FOURCC timer usage ID
+    //		DWORD dwValue;			// timer value in samples from head
+    // } CART_TIMER;
+    
+    fprintf(stderr, "Warning: CartChunk is not supported yet.\n");
+    
+    // cart-version
+    // cart-title
+    // cart-artist
+    // cart-cutid
+    // cart-clientid
+    // cart-category
+    // cart-classification
+    // cart-outcue
+    // cart-startdate
+    // cart-starttime
+    // cart-enddate
+    // cart-endtime
+    // cart-producerappid
+    // cart-producerappversion
+    // cart-userdef
+    // cart-levelreference
+    // cart-url
+    // cart-tagtext
+}
+
 
 // 'LIST' 
 void
@@ -396,6 +450,8 @@ proccessSubChunk(FILE* file, int seek)
         proccessDISPChunk( file, chunkSize );
     } else if (memcmp("LIST", &type, sizeof(type))==0) {
         proccessLISTChunk( file, chunkSize );
+    } else if (memcmp("cart", &type, sizeof(type))==0) {
+       proccessCartChunk( file, chunkSize );
     } else if (memcmp("JUNK", &type, sizeof(type))==0) {
         // Ignore
     } else {
