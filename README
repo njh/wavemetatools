@@ -31,9 +31,3 @@ bsiwave_to_mpeg
 Perl script to convert a BSI style WAVE file and its metadata 
 to an MPEG Audio file.
 
-
-cartchunk_to_mpeg
------------------
-Perl script to convert a CartChunk WAVE file and its metadata 
-to an MPEG Audio file.
-

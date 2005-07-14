@@ -57,12 +57,12 @@
 #define CF_DSPENHMETAFILE   0x008E
 
 
-// CartChunk data structures
-typedef struct
-{
-	char dwUsage[4];			// FOURCC timer usage ID
-	u_int16_t dwValue;			// timer value in samples from head
-} cart_timer_t;
+
+// Globals
+int debug = 0;
+u_int32_t byteRate = 0;
+u_int32_t audioDataLen = 0;
+
 
 typedef struct {
  	char Version[4];			// Version of the data structure
@@ -80,19 +80,27 @@ typedef struct {
     char ProducerAppID[64];		// Name of vendor or application
     char ProducerAppVersion[64];// Version of producer application
     char UserDef[64];			// User defined text
-    u_int32_t LevelReference;	// Sample value for 0 dB reference
-    cart_timer_t PostTimer[8];	// 8 time markers after head
-    char Reserved[276];			// Reserved for future expansion
-    char URL[1024];				// Uniform resource locator
-    // char TagText[];			// Free form text for scripts or tags
+    //DWORD LevelReference;	// Sample value for 0 dB reference
+    //CART_TIMER PostTimer[8];	// 8 time markers after head
+    //CHAR Reserved[276];		// Reserved for future expansion
+    //CHAR URL[1024];			// Uniform resource locator
+    //CHAR TagText[];			// Free form text for scripts or tags
 } cart_extension_t;
 
 
-// Globals
-int debug = 0;
-u_int32_t byteRate = 0;
-u_int32_t audioDataLen = 0;
-
+typedef struct {
+ 	char Description[256];			// ASCII: Description of the sound sequence
+    char Originator[32];			// ASCII: Name of the originator
+    char OriginatorReference[32];	// ASCII: Reference of the originator
+    char OriginationDate[10];		// ASCII: Origination Date yyyy-mm-dd
+    char OriginationTime[8];		// ASCII: Origination Date hh-mm-ss 
+    //DWORD TimeReferenceLow;
+    //DWORD TimeReferenceHigh;
+    //WORD Version;
+    //CHAR UMID[64];
+    //CHAR Reserved[190];
+    //CHAR CodingHistory[];
+ } bext_extension_t;
 
 
 void
@@ -158,42 +166,26 @@ proccessDataChunk( FILE *file, u_int32_t chunkSize )
 void
 proccessBextChunk( FILE *file, u_int32_t chunkSize)
 {
-    char description[256];          // ASCII : «Description of the sound sequence»
-    char originator[32];            // ASCII : «Name of the originator»
-    char originatorReference[32];   // ASCII : «Reference of the originator»
-    char originationDate[10];       // ASCII : «yyyy:mm:dd» 
-    char originationTime[8];        // ASCII : «hh:mm:ss» 
+    bext_extension_t bext;
     
-//  u_int32_t timeReferenceLow;         //First sample count since midnight, low word 
-//  u_int32_t timeReferenceHigh;        //First sample count since midnight, high word 
-//  char reserved[254] ;            // Reserved for future use, set to "NULL" 
-    //char codingHistory[];         // ASCII : « History coding » 
+    // Zero the memory
+    memset( &bext, 0, sizeof(bext) );
     
-    if (fread(&description, sizeof(description), 1, file)!=1)
-        handle_error("Error: unable to read description\n");
-    printf("bext-description: %s\n", description);
-    
-    if (fread(&originator, sizeof(originator), 1, file)!=1)
-        handle_error("Error: unable to read originator\n");
-    printf("bext-originator: %s\n", originator);
-    
-    if (fread(&originatorReference, sizeof(originatorReference), 1, file)!=1)
-        handle_error("Error: unable to read originatorReference\n");
-    printf("bext-originator-ref: %s\n", originatorReference);
-    
-    if (fread(&originationDate, sizeof(originationDate), 1, file)!=1)
-        handle_error("Error: unable to read originationDate\n");
-    printf("bext-origination-date: %s\n", originationDate);
-    
-    if (fread(&originationTime, sizeof(originationTime), 1, file)!=1)
-        handle_error("Error: unable to read originationTime\n");
-    printf("bext-origination-time: %s\n", originationTime);
-    
+    // Read in the chunk
+   	if (fread(&bext, sizeof(bext), 1, file)!=1)
+      handle_error("Error: unable to read bext strings\n");
+   		
+	printf("bext-description: %s\n", bext.Description);
+	printf("bext-originator: %s\n", bext.Originator);
+	printf("bext-originator-ref: %s\n", bext.OriginatorReference);
+	printf("bext-origination-date: %10.10s\n", bext.OriginationDate);
+	printf("bext-origination-time: %8.8s\n", bext.OriginationTime);
 
-    //printf("bext-time-reference-low: %d\n", read_uint32( file, "bext-time-reference-low" ));
-    //printf("bext-time-reference-high: %d\n", read_uint32( file, "bext-time-reference-high" ));
+    //printf("bext-time-reference: %d\n", read_uint64( file, "bext-time-reference" ));
     //printf("bext-version: %d\n", read_uint16( file, "bext-version" ));
+    //printf("bext-umid: %d\n", read_uint64( file, "bext-umid" ));
 }
+
 
 // 'mext' 
 void
@@ -245,13 +237,14 @@ void
 proccessCartChunk( FILE *file, u_int32_t chunkSize )
 {
     cart_extension_t cart;
+    int n;
     
     // Zero the memory
     memset( &cart, 0, sizeof(cart) );
     
     // Read in the chunk
    	if (fread(&cart, sizeof(cart), 1, file)!=1)
-      handle_error("Error: unable to read whole CartChunk\n");
+      handle_error("Error: unable to read CartChunk strings\n");
    		
 	printf("cart-version: %4.4s\n", cart.Version);
 	printf("cart-title: %s\n", cart.Title);
@@ -268,11 +261,26 @@ proccessCartChunk( FILE *file, u_int32_t chunkSize )
 	printf("cart-producerappid: %s\n", cart.ProducerAppID);
 	printf("cart-producerappversion: %s\n", cart.ProducerAppVersion);
 	printf("cart-userdef: %s\n", cart.UserDef);
-	printf("cart-levelreference: %d\n", my_swap32(cart.LevelReference) );
 	
-	// ** Post Timer **
+	// Read and display the 32bit Level Reference
+	printf("cart-levelreference: %d\n", read_uint32( file, "CartChunk level reference" ) );
 	
-	printf("cart-url: %s\n", cart.URL);
+	// Read in the 8 post timer references
+	for(n=0;n<8;n++) {
+		char usage[4];
+		u_int32_t value;
+	
+		if (fread(&usage, 4, 1, file)!=1)
+		  handle_error("Error: unable to read timer ID\n");
+		value = read_uint32( file, "cart post timer value" );
+		
+		if (usage[0]!=0 || usage[1]!=0 ||
+		    usage[1]!=0 || usage[3]!=0 ) {
+			printf("cart-timer-%4.4s: %d\n", usage, value);
+		}
+	}
+	
+	// ** URL Text **
 
 	// ** Tag Text **
 }
@@ -545,7 +553,7 @@ main(int argc, char **argv)
     }
     
     // Display the length (time) of the file
-    if (byteRate)   printf("wave-duration: %f\n", (float)audioDataLen/byteRate);
+    if (byteRate)   printf("wave-duration: %d\n", (int)((float)audioDataLen/byteRate * 1000.0f));
     else            printf("wave-duration: unknown\n");
     
     // Close the file
