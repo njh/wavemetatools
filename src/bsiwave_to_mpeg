@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#    bsiwave_to_mpeg
+#    wavemeta_to_mpeg
 #    
 #    Copyright (C) 2005  Nicholas J. Humfrey
 #    
@@ -19,12 +19,21 @@
 #    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #
 
-#use MP3::Tag;
+use MP3::Tag;
 use strict;
+use warnings;
 
 ## Globals
 my $WAVEUNWRAP = 'waveunwrap';
 my $WAVEMETAINFO = 'wavemetainfo';
+my $BSI_TAGMAP = {
+	'disp-title' => 'TIT2',
+	'info-iart' => 'TPE1',
+	'info-ialb' => 'TALB',
+	'info-iyer' => 'TYER',
+};
+
+
 
 ## Get Parameters
 my $input_file = shift( @ARGV )  || usage("Missing input file");
@@ -33,10 +42,12 @@ my $output_file = shift( @ARGV ) || usage("Missing output file");
 ## Get information about input file
 my $info = get_meta_info( $input_file );
 
+## Unwrap the WAVE file
+my $res = system($WAVEUNWRAP, $input_file, $output_file);
+die "Failed to unwrap wave file: $res\n" unless ($res==0);
 
-foreach( keys %$info ) {
-	print "$_ -> $info->{$_}\n";
-}
+## Apply ID3 tags
+apply_mp3_tags( $output_file, $info, $BSI_TAGMAP );
 
 exit;
 
@@ -44,7 +55,7 @@ exit;
 sub usage {
 	my ($err) = @_;
 	print "Error: $err\n" if ($err);
-    print STDERR "Usage: $0 <filename.wav> <output>\n\n";
+    print STDERR "Usage: $0 <filename.wav> <outputfile>\n\n";
     exit(-1);
 }
 
@@ -52,18 +63,47 @@ sub get_meta_info {
 	my ($file) = @_;
 	my $info = {};
 	
-	open(INFO, "|$WAVEMETAINFO $file") or
+	open(INFO, "$WAVEMETAINFO $file|") or
 	die "Failed to run 'wavemetainfo' on input file: $!";
 	
 	while(my $line = <INFO>) {
 		my ($name, $value) = ($line =~ /^([-\w]+): (.*)$/);
-		$info->{$name} = $value;
+		$info->{$name} = $value if ($name);
 	}
 	
 	close(INFO);
 	
 	return $info;
 }
+
+sub apply_mp3_tags {
+	my ($filename, $info, $tagmap) = @_;
+	
+	# Open the MP3 file and load existing tags	
+	my $mp3 = MP3::Tag->new($filename);
+	$mp3->get_tags();
+
+	# Remove any existing ID3v1
+	$mp3->{ID3v1}->remove_tag() if (exists $mp3->{ID3v1});
+
+	# Create ID3v2 tags if they don't already exist
+	$mp3->new_tag("ID3v2") unless (exists $mp3->{ID3v2});
+	
+	## Add ID3v2 frames
+	my $id3v2 = $mp3->{ID3v2};
+	$id3v2->add_frame("TIT2", "Hello World !");
+	foreach( keys %$info ) {
+		print "$_ -> $info->{$_}\n";
+	}
+	
+	
+	# Saves changes to disc and close file
+	$id3v2->write_tag();
+	$mp3->close();
+}
+
+
+
 
 # Process an mp3 file
 # sub processFile {

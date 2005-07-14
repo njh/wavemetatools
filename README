@@ -4,6 +4,9 @@ WAVE Meta Tools
 A collection of roughly coded tools to manipulate WAVE files, 
 with an emphasis on the metadata used by the radio industry.
 
+The perl scripts require the MP3::Tag perl module:
+http://tagged.sf.net/
+http://search.cpan.org/~thogee/tagged/
 
 
 wavemetainfo

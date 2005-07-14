@@ -80,7 +80,7 @@ typedef struct {
     char ProducerAppID[64];		// Name of vendor or application
     char ProducerAppVersion[64];// Version of producer application
     char UserDef[64];			// User defined text
-    u_int16_t LevelReference;	// Sample value for 0 dB reference
+    u_int32_t LevelReference;	// Sample value for 0 dB reference
     cart_timer_t PostTimer[8];	// 8 time markers after head
     char Reserved[276];			// Reserved for future expansion
     char URL[1024];				// Uniform resource locator
@@ -253,7 +253,7 @@ proccessCartChunk( FILE *file, u_int32_t chunkSize )
    	if (fread(&cart, sizeof(cart), 1, file)!=1)
       handle_error("Error: unable to read whole CartChunk\n");
    		
-	printf("cart-version: %s\n", cart.Version);
+	printf("cart-version: %4.4s\n", cart.Version);
 	printf("cart-title: %s\n", cart.Title);
 	printf("cart-artist: %s\n", cart.Artist);
 	printf("cart-cutid: %s\n", cart.CutID);
@@ -261,14 +261,14 @@ proccessCartChunk( FILE *file, u_int32_t chunkSize )
 	printf("cart-category: %s\n", cart.Category);
 	printf("cart-classification: %s\n", cart.Classification);
 	printf("cart-outcue: %s\n", cart.OutCue);
-	printf("cart-startdate: %s\n", cart.StartDate);
-	printf("cart-starttime: %s\n", cart.StartTime);
-	printf("cart-enddate: %s\n", cart.EndDate);
-	printf("cart-endtime: %s\n", cart.EndTime);
+	printf("cart-startdate: %10.10s\n", cart.StartDate);
+	printf("cart-starttime: %8.8s\n", cart.StartTime);
+	printf("cart-enddate: %10.10s\n", cart.EndDate);
+	printf("cart-endtime: %8.8s\n", cart.EndTime);
 	printf("cart-producerappid: %s\n", cart.ProducerAppID);
 	printf("cart-producerappversion: %s\n", cart.ProducerAppVersion);
 	printf("cart-userdef: %s\n", cart.UserDef);
-	printf("cart-levelreference: %d\n", my_swap32(cart.LevelReference));
+	printf("cart-levelreference: %d\n", my_swap32(cart.LevelReference) );
 	
 	// ** Post Timer **
 	
