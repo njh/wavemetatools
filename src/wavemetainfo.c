@@ -267,16 +267,20 @@ proccessCartChunk( FILE *file, u_int32_t chunkSize )
 	
 	// Read in the 8 post timer references
 	for(n=0;n<8;n++) {
-		char usage[4];
+		char usage[5];
 		u_int32_t value;
 	
 		if (fread(&usage, 4, 1, file)!=1)
 		  handle_error("Error: unable to read timer ID\n");
 		value = read_uint32( file, "cart post timer value" );
+
+		// Cut spaces off end of timer ID
+		if (usage[3] == 0x20) usage[3] = 0x00;
+		usage[4] = 0x00;	
 		
 		if (usage[0]!=0 || usage[1]!=0 ||
 		    usage[1]!=0 || usage[3]!=0 ) {
-			printf("cart-timer-%4.4s: %d\n", usage, value);
+			printf("cart-timer-%s: %d\n", usage, value);
 		}
 	}
 	
