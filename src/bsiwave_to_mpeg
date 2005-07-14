@@ -20,12 +20,11 @@
 #
 
 use MP3::Tag;
-use Data::Dumper;
+use IO::Pipe;
 use strict;
 use warnings;
 
 ## Globals / Settings
-my $ID3V2 = 'id3v2';
 my $WAVEUNWRAP = 'waveunwrap';
 my $WAVEMETAINFO = 'wavemetainfo';
 
@@ -84,14 +83,6 @@ if ($info->{'fmt-audio-format'} !~ /MPEG/) {
 system($WAVEUNWRAP, $input_file, $output_file) && 
 die "Failed to unwrap wave file: $!\n";
 
-## Convert any older ID3 tags and remove v1 tags
-if (`which $ID3V2` !~ /not found/) {
-	system($ID3V2, '-C', $output_file) && 
-	die "Failed to convert ID3v1 tags to ID3v2: $!\n";
-	system($ID3V2, '-s', $output_file) && 
-	die "Failed to remove ID3v1 tags from file: $!\n";
-}
-
 ## Apply ID3 tags
 apply_mp3_tags( $output_file, $info, $BSI_TAGMAP );
 
@@ -109,15 +100,16 @@ sub get_meta_info {
 	my ($file) = @_;
 	my $info = {};
 	
-	open(INFO, "$WAVEMETAINFO $file|") or
-	die "Failed to run 'wavemetainfo' on input file: $!";
-	
-	while(my $line = <INFO>) {
+	my $pipe = new IO::Pipe;
+	$pipe->reader( $WAVEMETAINFO, $file );
+
+	# Put each of the info fields into a hash	
+	while(my $line = <$pipe>) {
 		my ($name, $value) = ($line =~ /^([-\w]+): (.*)$/);
 		$info->{$name} = $value if ($name);
 	}
 	
-	close(INFO);
+	$pipe->close();
 	
 	return $info;
 }
@@ -127,18 +119,24 @@ sub apply_mp3_tags {
 	
 	# Open the MP3 file and load existing tags	
 	my $mp3 = MP3::Tag->new($filename);
-	$mp3->get_tags();
 
-	# Create ID3v2 tags if they don't already exist
-	$mp3->new_tag("ID3v2") unless (exists $mp3->{ID3v2});
-	
-	# Add ID3v2 frames
-	my $id3v2 = $mp3->{ID3v2};
+	# Clean-up - remove old tags
+	$mp3->get_tags();
+	if (exists $mp3->{ID3v1}) {
+		$mp3->{ID3v1}->remove_tag;
+		$mp3->{ID3v1}->write_tag;
+	}
+	if (exists $mp3->{ID3v2}) {
+		$mp3->{ID3v2}->remove_tag;
+		$mp3->{ID3v2}->write_tag;
+	}
+
+	# Add new ID3v2 frames
+	my $id3v2 = $mp3->new_tag("ID3v2");
 	foreach( keys %$info ) {
 		if (exists $map->{$_}) {
 			my @frame = mysplit( $map->{$_} );
 			my $value = $info->{$_};
-			#$id3v2->remove_frame(@frame);
 			$id3v2->add_frame(@frame, $value) || warn "Failed to add frame for $_.";
 		}
 	}
