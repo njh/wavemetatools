@@ -29,5 +29,5 @@ wrap up some MPEG Audio inside a WAVE file.
 bsiwave_to_mpeg
 ---------------
 Perl script to convert a BSI style WAVE file and its metadata 
-to an MPEG Audio file.
+to an MPEG Audio file with the metadata stored in ID3 tags.
 
