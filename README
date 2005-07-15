@@ -21,11 +21,6 @@ it to an output file. Works well for extacting MPEG Audio, but may be
 useful for other WAVE file formats too.
 
 
-wavewrap
---------
-wrap up some MPEG Audio inside a WAVE file.
-
-
 bsiwave_to_mpeg
 ---------------
 Perl script to convert a BSI style WAVE file and its metadata 
