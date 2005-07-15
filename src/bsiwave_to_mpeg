@@ -29,7 +29,6 @@ my $WAVEUNWRAP = 'waveunwrap';
 my $WAVEMETAINFO = 'wavemetainfo';
 
 my $BSI_TAGMAP = {
-	'wave-duration' => 'TLEN',
 	'disp-title' => 'TIT2',
 	'info-iart' => 'TPE1',
 	'info-ialb' => 'TALB',
@@ -70,23 +69,69 @@ my $BSI_TAGMAP = {
 
 
 ## Get Parameters
-my $input_file = shift( @ARGV )  || usage("Missing input file");
-my $output_file = shift( @ARGV ) || usage("Missing output file");
+my $input = shift( @ARGV )  || usage("Missing input file");
+my $output = shift( @ARGV ) || usage("Missing output file");
 
-## Get information about input file
-my $info = get_meta_info( $input_file );
-if ($info->{'fmt-audio-format'} !~ /MPEG/) {
-	die "Error: audio contained in WAVE file isn't MPEG Audio.\n";
+
+## Is the input a directory or a file ?
+if (-d $input ) {
+
+	if (!-d $output) {
+		die "Output must be a directory, if input is a directory.\n";
+	}
+	
+	opendir( INPUT, $input) or die "Failed to open input directory: $!";
+	
+	while( my $file = readdir( INPUT ) ) {
+		my $inputpath = $input.'/'.$file;
+		my $outputpath = $output.'/'.change_suffix($file);
+		
+		next if ($file =~ /^\./);
+		next if (!-f $inputpath);
+		
+		print "$inputpath -> $outputpath\n";
+		convert_file( $inputpath, $outputpath );
+	}
+	closedir( INPUT );
+	
+
+} else {
+
+	convert_file( $input, $output );
+
 }
 
-## Unwrap the WAVE file
-system($WAVEUNWRAP, $input_file, $output_file) && 
-die "Failed to unwrap wave file: $!\n";
-
-## Apply ID3 tags
-apply_mp3_tags( $output_file, $info, $BSI_TAGMAP );
-
 exit;
+
+
+
+
+sub change_suffix {
+	my ($suffix) = @_;
+	$suffix =~ s/(\.wav)$//i;
+	$suffix .= '.mp3';
+	return $suffix;
+}
+
+
+sub convert_file {
+	my ($input_file, $output_file) = @_;
+	
+	## Get information about input file
+	my $info = get_meta_info( $input_file );
+	if ($info->{'fmt-audio-format'} !~ /MPEG/) {
+		warn "Error: audio contained in WAVE file isn't MPEG Audio.\n";
+		return;
+	}
+	
+	## Unwrap the WAVE file
+	system($WAVEUNWRAP, $input_file, $output_file) && 
+	die "Failed to unwrap wave file: $!\n";
+	
+	## Apply ID3 tags
+	apply_mp3_tags( $output_file, $info, $BSI_TAGMAP );
+
+}
 
 
 sub usage {
@@ -95,6 +140,7 @@ sub usage {
     print STDERR "Usage: $0 <filename.wav> <outputfile>\n\n";
     exit(-1);
 }
+
 
 sub get_meta_info {
 	my ($file) = @_;
@@ -113,6 +159,7 @@ sub get_meta_info {
 	
 	return $info;
 }
+
 
 sub apply_mp3_tags {
 	my ($filename, $info, $map) = @_;
