@@ -178,7 +178,6 @@ sub apply_mp3_tags {
 	$mp3->get_tags();
 	if (exists $mp3->{ID3v1}) {
 		$mp3->{ID3v1}->remove_tag;
-		$mp3->{ID3v1}->write_tag;
 	}
 	if (exists $mp3->{ID3v2}) {
 		$mp3->{ID3v2}->remove_tag;
