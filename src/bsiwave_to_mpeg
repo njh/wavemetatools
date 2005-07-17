@@ -109,7 +109,7 @@ exit;
 sub change_suffix {
 	my ($suffix) = @_;
 	$suffix =~ s/(\.wav)$//i;
-	$suffix .= '.mpa';
+	$suffix .= '.mp3';
 	return $suffix;
 }
 
@@ -137,7 +137,7 @@ sub convert_file {
 sub usage {
 	my ($err) = @_;
 	print "Error: $err\n" if ($err);
-    print STDERR "Usage: $0 <filename.wav> <outputfile.mpa>\n\n";
+    print STDERR "Usage: $0 <filename.wav> <outputfile.mp3>\n\n";
     exit(-1);
 }
 
