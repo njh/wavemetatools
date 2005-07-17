@@ -176,13 +176,8 @@ sub apply_mp3_tags {
 
 	# Clean-up - remove old tags
 	$mp3->get_tags();
-	if (exists $mp3->{ID3v1}) {
-		$mp3->{ID3v1}->remove_tag;
-	}
-	if (exists $mp3->{ID3v2}) {
-		$mp3->{ID3v2}->remove_tag;
-		$mp3->{ID3v2}->write_tag;
-	}
+	$mp3->{ID3v1}->remove_tag if (exists $mp3->{ID3v1});
+	$mp3->{ID3v2}->remove_tag if (exists $mp3->{ID3v2});
 
 	# Add new ID3v2 frames
 	my $id3v2 = $mp3->new_tag("ID3v2");
