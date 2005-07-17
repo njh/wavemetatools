@@ -109,7 +109,7 @@ exit;
 sub change_suffix {
 	my ($suffix) = @_;
 	$suffix =~ s/(\.wav)$//i;
-	$suffix .= '.mp3';
+	$suffix .= '.mpa';
 	return $suffix;
 }
 
