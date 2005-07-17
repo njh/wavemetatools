@@ -117,6 +117,10 @@ sub change_suffix {
 sub convert_file {
 	my ($input_file, $output_file) = @_;
 	
+	## Get modification date of the input file
+	my $atime = time();
+	my $mtime = (stat($input_file))[9];
+	
 	## Get information about input file
 	my $info = get_meta_info( $input_file );
 	if ($info->{'fmt-audio-format'} !~ /MPEG/) {
@@ -130,6 +134,9 @@ sub convert_file {
 	
 	## Apply ID3 tags
 	apply_mp3_tags( $output_file, $info, $BSI_TAGMAP );
+
+	## Set the modification date of the output file
+	utime( $atime, $mtime, $output_file );
 
 }
 
