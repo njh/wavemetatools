@@ -23,6 +23,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #include "config.h"
 #include "util.h"
