@@ -22,6 +22,8 @@
 #ifndef _UTIL_H
 #define _UTIL_H
 
+void handle_error(const char* errStr);
+
 u_int32_t my_swap32(u_int32_t x);
 u_int16_t my_swap16(u_int16_t x);
 

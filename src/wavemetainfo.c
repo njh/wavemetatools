@@ -104,20 +104,11 @@ typedef struct {
 
 
 void
-handle_error(char* errStr)
-{
-    fprintf(stderr, errStr);
-    //if (errNum) fprintf(stderr, "\n\t%x\n", errNum);
-    
-    exit(2);
-}
-
-void
 read_print_text(FILE* file, u_int32_t strLen)
 {
     char* data = malloc(strLen+1);
     if (fread(data, strLen, 1, file)!=1)
-        handle_error("Error: unable to read text\n");
+        handle_error("unable to read text");
     data[strLen] = 0;
     printf("%s\n", data);
     free(data);
@@ -156,8 +147,8 @@ proccessFmtChunk( FILE *file, u_int32_t chunkSize )
 void
 proccessDataChunk( FILE *file, u_int32_t chunkSize )
 {
-    printf("data-seek: 0x%6.6x\n", ftell(file));
-    printf("data-size: 0x%6.6x\n", chunkSize);
+    printf("data-seek: 0x%6.6lx\n", ftell(file));
+    printf("data-size: 0x%6.6xx\n", chunkSize);
     audioDataLen = chunkSize;
 }
 
@@ -173,7 +164,7 @@ proccessBextChunk( FILE *file, u_int32_t chunkSize)
     
     // Read in the chunk
    	if (fread(&bext, sizeof(bext), 1, file)!=1)
-      handle_error("Error: unable to read bext strings\n");
+      handle_error("unable to read bext strings");
    		
 	printf("bext-description: %s\n", bext.Description);
 	printf("bext-originator: %s\n", bext.Originator);
@@ -244,7 +235,7 @@ proccessCartChunk( FILE *file, u_int32_t chunkSize )
     
     // Read in the chunk
    	if (fread(&cart, sizeof(cart), 1, file)!=1)
-      handle_error("Error: unable to read CartChunk strings\n");
+      handle_error("unable to read CartChunk strings");
    		
 	printf("cart-version: %4.4s\n", cart.Version);
 	printf("cart-title: %s\n", cart.Title);
@@ -271,7 +262,7 @@ proccessCartChunk( FILE *file, u_int32_t chunkSize )
 		u_int32_t value;
 	
 		if (fread(&usage, 4, 1, file)!=1)
-		  handle_error("Error: unable to read timer ID\n");
+		  handle_error("unable to read timer ID");
 		value = read_uint32( file, "cart post timer value" );
 
 		// Cut spaces off end of timer ID
@@ -298,7 +289,7 @@ proccessLISTChunk( FILE *file, u_int32_t chunkSize )
 
     // Check the type of list
     if (fread(&list_type, sizeof(list_type), 1, file)!=1)
-        handle_error("Error: unable to read LIST type\n");
+        handle_error("unable to read LIST type");
 
     if (memcmp("INFO", &list_type, sizeof(list_type))!=0) {
         fprintf(stderr, "Warning: Unsupported LIST type '%4.4s'.\n", (char*)list_type);
@@ -317,7 +308,7 @@ proccessLISTChunk( FILE *file, u_int32_t chunkSize )
         int i = 1;
         
         if (fread(&info_type, sizeof(info_type), 1, file)!=1)
-            handle_error("Error: unable to read INFO sub-type\n");
+            handle_error("unable to read INFO sub-type");
         
         subSize= read_uint32( file, "INFO sub-size" );
         
@@ -372,11 +363,11 @@ proccessSubChunk(FILE* file, int seek)
     do {
         // Seek to the start of the sub chunk
         if (fseek(file, seek, SEEK_SET)!=0)
-            handle_error("Error: unable to seek to start of sub chunk\n");
+            handle_error("unable to seek to start of sub chunk");
 
         // Read in the sub chunk type
         if (fread(&type, sizeof(type), 1, file)!=1)
-            handle_error("Error: unable to read sub chunk type\n");
+            handle_error("unable to read sub chunk type");
         
         // skip a byte if the sub-chunk type starts with a null byte
         if (type[0] == 0) {
@@ -445,11 +436,11 @@ proccessChunk(FILE* file, int seek)
 
     // Seek to the start of the chunk
     if (seek != fseek(file, seek, SEEK_SET))
-        handle_error("Error: unable to seek to start of chunk\n");
+        handle_error("unable to seek to start of chunk");
 
     // Read in the chunk type
     if (fread(&type, sizeof(type), 1, file)!=1)
-        handle_error("Error: unable to read chunk type\n");
+        handle_error("unable to read chunk type");
 
     // DEBUGGING
     if (debug) printf("Chunk ID: %4.4s\n", (char*)&type);
@@ -474,7 +465,7 @@ proccessChunk(FILE* file, int seek)
     
     // Read in the format of the chunk
     if (fread(&format, sizeof(format), 1, file)!=1)
-        handle_error("Error: unable to read chunk format\n");
+        handle_error("unable to read chunk format");
 
 
     // DEBUGGING
@@ -544,11 +535,11 @@ main(int argc, char **argv)
 
     
     // Get the length of the file
-    if(stat(filename, &fileInfo))   handle_error("Error: unable to stat file\n");
+    if(stat(filename, &fileInfo))   handle_error("unable to stat file");
 
     // Open the file
     file = fopen(filename, "r");
-    if (file==NULL) handle_error("Error: unable to open file\n");
+    if (file==NULL) handle_error("unable to open file");
 
     // Get chunks until the next chunk is
     // beyond the end of the file

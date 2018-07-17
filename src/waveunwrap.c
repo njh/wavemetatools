@@ -36,16 +36,6 @@
 FILE * output = NULL;
 
 
-void
-handle_error(char* errStr)
-{
-    fprintf(stderr, errStr);
-    //if (errNum) fprintf(stderr, "\n\t%x\n", errNum);
-    
-    exit(2);
-}
-
-
 // 'data' 
 void
 proccessDataChunk( FILE *input, u_int32_t chunkSize )
@@ -94,11 +84,11 @@ proccessSubChunk(FILE* file, int seek)
     do {
         // Seek to the start of the sub chunk
         if (fseek(file, seek, SEEK_SET)!=0)
-            handle_error("Error: unable to seek to start of sub chunk\n");
+            handle_error("unable to seek to start of sub chunk");
 
         // Read in the sub chunk type
         if (fread(&type, sizeof(type), 1, file)!=1)
-            handle_error("Error: unable to read sub chunk type\n");
+            handle_error("unable to read sub chunk type");
         
         // skip a byte if the sub-chunk type starts with a null byte
         if (type[0] == 0) ++seek;
@@ -133,11 +123,11 @@ proccessChunk(FILE* file, int seek)
 
     // Seek to the start of the chunk
     if (seek != fseek(file, seek, SEEK_SET))
-        handle_error("Error: unable to seek to start of chunk\n");
+        handle_error("unable to seek to start of chunk");
 
     // Read in the chunk type
     if (fread(&type, sizeof(type), 1, file)!=1)
-        handle_error("Error: unable to read chunk type\n");
+        handle_error("unable to read chunk type");
 
      // Make sure it is RIFF
     if (memcmp("RIFF", &type, sizeof(type))!=0) {
@@ -152,7 +142,7 @@ proccessChunk(FILE* file, int seek)
 
     // Read in the format of the chunk
     if (fread(&format, sizeof(format), 1, file)!=1)
-        handle_error("Error: unable to read chunk format\n");
+        handle_error("unable to read chunk format");
 
    // Make sure it is WAVE
     if (memcmp("WAVE", &format, sizeof(format))!=0) {
@@ -209,15 +199,15 @@ main(int argc, char **argv)
     outputname = argv[optind+1];
 
     // Get the length of the file
-    if(stat(inputname, &fileInfo))   handle_error("Error: unable to stat file\n");
+    if(stat(inputname, &fileInfo))   handle_error("unable to stat file");
 
     // Open the input file
     input = fopen(inputname, "r");
-    if (input==NULL) handle_error("Error: unable to open input file\n");
+    if (input==NULL) handle_error("unable to open input file");
 
     // Open the output file
     output = fopen(outputname, "w");
-    if (output==NULL) handle_error("Error: unable to open output file\n");
+    if (output==NULL) handle_error("unable to open output file");
 
 
     // Get chunks until the next chunk is

@@ -27,6 +27,12 @@
 #include "config.h"
 #include "util.h"
 
+void handle_error(const char* errStr)
+{
+    fprintf(stderr, "Error: %s\n", errStr);
+    exit(2);
+}
+
 u_int32_t my_swap32(u_int32_t x) {
     return((x<<24)|((x<<8)&0x00FF0000)|((x>>8)&0x0000FF00)|(x>>24));
 }
