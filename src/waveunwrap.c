@@ -38,7 +38,7 @@ FILE * output = NULL;
 
 // 'data' 
 void
-proccessDataChunk( FILE *input, u_int32_t chunkSize )
+proccessDataChunk( FILE *input, uint32_t chunkSize )
 {
 	char * read_buffer = malloc( READ_BUFFER_SIZE );
 	int read_size = READ_BUFFER_SIZE;
@@ -74,8 +74,8 @@ int
 proccessSubChunk(FILE* file, int seek)
 {
     char type[4];
-    u_int32_t chunkSize;
-    u_int32_t nextSubChunk;
+    uint32_t chunkSize;
+    uint32_t nextSubChunk;
 
     // # For some unknown reason the data in the
     // # WAVE data chunk is sometimes a byte or two too long
@@ -117,9 +117,9 @@ proccessChunk(FILE* file, int seek)
 {
     char type[4];
     char format[4];
-    u_int32_t chunkSize;
-    u_int32_t nextChunk;
-    u_int32_t subSeek;
+    uint32_t chunkSize;
+    uint32_t nextChunk;
+    uint32_t subSeek;
 
     // Seek to the start of the chunk
     if (seek != fseek(file, seek, SEEK_SET))
@@ -174,7 +174,7 @@ static int usage( const char * progname )
 int
 main(int argc, char **argv)
 {
-    u_int32_t seek = 0;
+    uint32_t seek = 0;
     struct stat fileInfo;
     FILE * input = NULL;
     char * inputname = NULL;

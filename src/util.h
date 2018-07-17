@@ -24,15 +24,15 @@
 
 void handle_error(const char* errStr);
 
-u_int32_t my_swap32(u_int32_t x);
-u_int16_t my_swap16(u_int16_t x);
+uint32_t my_swap32(uint32_t x);
+uint16_t my_swap16(uint16_t x);
 
-u_int32_t read_uint32( FILE* file, const char * err_str );
-u_int16_t read_uint16( FILE* file, const char * err_str );
-u_int8_t  read_uint8( FILE* file, const char * err_str );
+uint32_t read_uint32( FILE* file, const char * err_str );
+uint16_t read_uint16( FILE* file, const char * err_str );
+uint8_t  read_uint8( FILE* file, const char * err_str );
 
-void write_uint32( FILE* file, u_int32_t x, const char * err_str );
-void write_uint16( FILE* file, u_int16_t x, const char * err_str );
-void write_uint8( FILE* file, u_int8_t x, const char * err_str );
+void write_uint32( FILE* file, uint32_t x, const char * err_str );
+void write_uint16( FILE* file, uint16_t x, const char * err_str );
+void write_uint8( FILE* file, uint8_t x, const char * err_str );
 
 #endif //_UTIL_H

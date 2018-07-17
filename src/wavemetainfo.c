@@ -60,8 +60,8 @@
 
 // Globals
 int debug = 0;
-u_int32_t byteRate = 0;
-u_int32_t audioDataLen = 0;
+uint32_t byteRate = 0;
+uint32_t audioDataLen = 0;
 
 
 typedef struct {
@@ -104,7 +104,7 @@ typedef struct {
 
 
 void
-read_print_text(FILE* file, u_int32_t strLen)
+read_print_text(FILE* file, uint32_t strLen)
 {
     char* data = malloc(strLen+1);
     if (fread(data, strLen, 1, file)!=1)
@@ -118,9 +118,9 @@ read_print_text(FILE* file, u_int32_t strLen)
 
 // 'fmt ' 
 void
-proccessFmtChunk( FILE *file, u_int32_t chunkSize )
+proccessFmtChunk( FILE *file, uint32_t chunkSize )
 {
-    u_int16_t audioFormat;
+    uint16_t audioFormat;
 
     audioFormat = read_uint16( file, "fmt-audio-format" );
     printf("fmt-audio-format: ");
@@ -145,7 +145,7 @@ proccessFmtChunk( FILE *file, u_int32_t chunkSize )
 
 // 'data' 
 void
-proccessDataChunk( FILE *file, u_int32_t chunkSize )
+proccessDataChunk( FILE *file, uint32_t chunkSize )
 {
     printf("data-seek: 0x%6.6lx\n", ftell(file));
     printf("data-size: 0x%6.6xx\n", chunkSize);
@@ -155,7 +155,7 @@ proccessDataChunk( FILE *file, u_int32_t chunkSize )
 
 // 'bext' 
 void
-proccessBextChunk( FILE *file, u_int32_t chunkSize)
+proccessBextChunk( FILE *file, uint32_t chunkSize)
 {
     bext_extension_t bext;
     
@@ -180,7 +180,7 @@ proccessBextChunk( FILE *file, u_int32_t chunkSize)
 
 // 'mext' 
 void
-proccessMextChunk( FILE *file, u_int32_t chunkSize)
+proccessMextChunk( FILE *file, uint32_t chunkSize)
 {
     printf("mext-sound-information: 0x%2.2x\n", read_uint16( file, "mext-sound-information" ));
     printf("mext-frame-size: %d\n", read_uint16( file, "mext-frame-size" ));
@@ -192,7 +192,7 @@ proccessMextChunk( FILE *file, u_int32_t chunkSize)
 
 // 'fact' 
 void
-proccessFactChunk( FILE *file, u_int32_t chunkSize )
+proccessFactChunk( FILE *file, uint32_t chunkSize )
 {
     printf("fact-sample-count: %d\n", read_uint32( file, "fact-sample-count" ) );
 }
@@ -200,9 +200,9 @@ proccessFactChunk( FILE *file, u_int32_t chunkSize )
 
 // 'DISP' 
 void
-proccessDISPChunk( FILE *file, u_int32_t chunkSize )
+proccessDISPChunk( FILE *file, uint32_t chunkSize )
 {
-    u_int32_t   type;
+    uint32_t   type;
     
     type = read_uint32( file, "DISP Chunk Type" );
     if (debug) fprintf(stderr, "DISPtype %d\n", type);
@@ -225,7 +225,7 @@ proccessDISPChunk( FILE *file, u_int32_t chunkSize )
 
 // 'cart' - CartChunk/aes46-2002
 void
-proccessCartChunk( FILE *file, u_int32_t chunkSize )
+proccessCartChunk( FILE *file, uint32_t chunkSize )
 {
     cart_extension_t cart;
     int n;
@@ -259,7 +259,7 @@ proccessCartChunk( FILE *file, u_int32_t chunkSize )
 	// Read in the 8 post timer references
 	for(n=0;n<8;n++) {
 		char usage[5];
-		u_int32_t value;
+		uint32_t value;
 	
 		if (fread(&usage, 4, 1, file)!=1)
 		  handle_error("unable to read timer ID");
@@ -283,7 +283,7 @@ proccessCartChunk( FILE *file, u_int32_t chunkSize )
 
 // 'LIST' 
 void
-proccessLISTChunk( FILE *file, u_int32_t chunkSize )
+proccessLISTChunk( FILE *file, uint32_t chunkSize )
 {
     char    list_type[4];
 
@@ -304,7 +304,7 @@ proccessLISTChunk( FILE *file, u_int32_t chunkSize )
 
     while(chunkSize) {
         char    info_type[4];
-        u_int32_t   subSize;
+        uint32_t   subSize;
         int i = 1;
         
         if (fread(&info_type, sizeof(info_type), 1, file)!=1)
@@ -350,8 +350,8 @@ int
 proccessSubChunk(FILE* file, int seek)
 {
     char type[4];
-    u_int32_t chunkSize;
-    u_int32_t nextSubChunk;
+    uint32_t chunkSize;
+    uint32_t nextSubChunk;
 
     // DEBUGGING
     if (debug) fprintf(stderr, "  Sub-Chunk at: %8.8x\n", seek);
@@ -427,9 +427,9 @@ proccessChunk(FILE* file, int seek)
 {
     char type[4];
     char format[4];
-    u_int32_t chunkSize;
-    u_int32_t nextChunk;
-    u_int32_t subSeek;
+    uint32_t chunkSize;
+    uint32_t nextChunk;
+    uint32_t subSeek;
 
     // DEBUGGING
     if (debug) printf("Chunk at: %8.8x\n", seek);
@@ -502,7 +502,7 @@ static int usage( const char * progname )
 int
 main(int argc, char **argv)
 {
-    u_int32_t seek = 0;
+    uint32_t seek = 0;
     struct stat fileInfo;
     FILE * file = NULL;
     char * filename = NULL;

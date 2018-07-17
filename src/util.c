@@ -33,18 +33,18 @@ void handle_error(const char* errStr)
     exit(2);
 }
 
-u_int32_t my_swap32(u_int32_t x) {
+uint32_t my_swap32(uint32_t x) {
     return((x<<24)|((x<<8)&0x00FF0000)|((x>>8)&0x0000FF00)|(x>>24));
 }
 
-u_int16_t my_swap16(u_int16_t x) {
+uint16_t my_swap16(uint16_t x) {
     return((x<<8)|(x>>8));
 }
 
-u_int32_t
+uint32_t
 read_uint32( FILE* file, const char * err_str )
 {
-    u_int32_t x = 0;
+    uint32_t x = 0;
     
     int res = fread( &x, 4, 1, file );
     if (res!=1) {
@@ -60,10 +60,10 @@ read_uint32( FILE* file, const char * err_str )
 }
 
 
-u_int16_t
+uint16_t
 read_uint16( FILE* file, const char * err_str )
 {
-    u_int16_t x = 0;
+    uint16_t x = 0;
     
     int res = fread( &x, 2, 1, file );
     if (res!=1) {
@@ -79,10 +79,10 @@ read_uint16( FILE* file, const char * err_str )
 }
 
 
-u_int8_t
+uint8_t
 read_uint8( FILE* file, const char * err_str )
 {
-    u_int8_t x = 0;
+    uint8_t x = 0;
     
     int res = fread( &x, 1, 1, file );
     if (res!=1) {
@@ -96,9 +96,9 @@ read_uint8( FILE* file, const char * err_str )
 
 
 void
-write_uint32( FILE* file, u_int32_t x, const char * err_str )
+write_uint32( FILE* file, uint32_t x, const char * err_str )
 {
-	u_int32_t y = my_swap32( x );
+	uint32_t y = my_swap32( x );
 
     int res = fwrite( &y, 4, 1, file );
     if (res!=1) {
@@ -109,9 +109,9 @@ write_uint32( FILE* file, u_int32_t x, const char * err_str )
 
 
 void
-write_uint16( FILE* file, u_int16_t x, const char * err_str )
+write_uint16( FILE* file, uint16_t x, const char * err_str )
 {
-	u_int16_t y = my_swap16( x );
+	uint16_t y = my_swap16( x );
 
     int res = fwrite( &y, 2, 1, file );
     if (res!=1) {
@@ -122,7 +122,7 @@ write_uint16( FILE* file, u_int16_t x, const char * err_str )
 
 
 void
-write_uint8( FILE* file, u_int8_t x, const char * err_str )
+write_uint8( FILE* file, uint8_t x, const char * err_str )
 {
     int res = fwrite( &x, 1, 1, file );
     if (res!=1) {

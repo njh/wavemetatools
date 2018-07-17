@@ -25,11 +25,11 @@ AC_C_CONST
 dnl ############## Type checks
 
 AC_CHECK_TYPE(int32_t, long)
-AC_CHECK_TYPE(u_int32_t, unsigned long)
+AC_CHECK_TYPE(uint32_t, unsigned long)
 AC_CHECK_TYPE(int16_t, short)
-AC_CHECK_TYPE(u_int16_t, unsigned short)
+AC_CHECK_TYPE(uint16_t, unsigned short)
 AC_CHECK_TYPE(int8_t, char)
-AC_CHECK_TYPE(u_int8_t, unsigned char)
+AC_CHECK_TYPE(uint8_t, unsigned char)
 
 
 dnl ############## Final Output
