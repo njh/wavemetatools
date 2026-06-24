@@ -149,7 +149,7 @@ void
 proccessDataChunk( FILE *file, uint32_t chunkSize )
 {
     printf("data-seek: 0x%6.6lx\n", ftell(file));
-    printf("data-size: 0x%6.6xx\n", chunkSize);
+    printf("data-size: 0x%6.6x\n", chunkSize);
     audioDataLen = chunkSize;
 }
 
