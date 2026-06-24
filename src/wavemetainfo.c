@@ -271,7 +271,7 @@ proccessCartChunk( FILE *file, uint32_t chunkSize )
 		usage[4] = 0x00;	
 		
 		if (usage[0]!=0 || usage[1]!=0 ||
-		    usage[1]!=0 || usage[3]!=0 ) {
+		    usage[2]!=0 || usage[3]!=0 ) {
 			printf("cart-timer-%s: %d\n", usage, value);
 		}
 	}
