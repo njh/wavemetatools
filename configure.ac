@@ -1,5 +1,5 @@
-dnl Require autoconf version >= 2.57
-AC_PREREQ(2.57)
+dnl Require a modern, widely available autoconf version
+AC_PREREQ([2.69])
 
 
 dnl ############# Initialisation
@@ -7,29 +7,26 @@ dnl ############# Initialisation
 AC_INIT([wavemetatools], [0.2.0], [njh@aelius.com])
 
 AC_CONFIG_SRCDIR(src/wavemetainfo.c)
-AC_CONFIG_AUX_DIR(build-scripts) 
-AC_CANONICAL_SYSTEM
+AC_CONFIG_AUX_DIR([build-scripts])
+AC_CONFIG_HEADERS([src/config.h])
 
-dnl Version 1.7 of automake is recommended
-AM_INIT_AUTOMAKE(1.7)
-AM_CONFIG_HEADER(src/config.h)
+AM_INIT_AUTOMAKE([foreign])
 
 
 dnl ############# Compiler and tools Checks
 
 AC_PROG_CC
 AC_C_BIGENDIAN
-AC_C_CONST
 
 
 dnl ############## Type checks
 
-AC_CHECK_TYPE(int32_t, long)
-AC_CHECK_TYPE(uint32_t, unsigned long)
-AC_CHECK_TYPE(int16_t, short)
-AC_CHECK_TYPE(uint16_t, unsigned short)
-AC_CHECK_TYPE(int8_t, char)
-AC_CHECK_TYPE(uint8_t, unsigned char)
+AC_TYPE_INT32_T
+AC_TYPE_UINT32_T
+AC_TYPE_INT16_T
+AC_TYPE_UINT16_T
+AC_TYPE_INT8_T
+AC_TYPE_UINT8_T
 
 
 dnl ############## Final Output
